@@ -1,4 +1,5 @@
 import numpy as np
+import numpy.typing as npt
 import pygame
 
 import gymnasium as gym
@@ -39,9 +40,17 @@ class ArenaEnv(gym.Env):
         return {
         }
     
-    def reset(self, seed=None, options=None):
+    def reset(self, 
+              deck1: list[str] = ['knight' * 8], 
+              deck2: list[str] = ['knight' * 8], 
+              seed=None, options=None):
         # We need the following line to seed self.np_random
         super().reset(seed=seed)
+        self.env = engine.GameEngine(deck1=deck1, 
+                                     deck2=deck2, 
+                                     fps=self.fps,
+                                     resolution=[self.screen_width, self.screen_height],
+                                     dimensions=[self.width, self.height])
 
         self._p1_view = np.zeros(shape=(self.window_size_width, self.window_size_height, 3), dtype=np.uint8)
         self._p2_view = np.zeros(shape=(self.window_size_width, self.window_size_height, 3), dtype=np.uint8)

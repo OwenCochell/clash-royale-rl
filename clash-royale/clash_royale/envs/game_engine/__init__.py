@@ -65,9 +65,10 @@ class GameEngine():
                  deck2: list[str] = ['knight' * 8], 
                  fps: int = 30,
                  resolution: npt.ArrayLike = [128, 128],
-                 dimensions: npt.ArrayLike = [32, 18]) -> None:
+                 dimensions: npt.ArrayLike = [18, 32]) -> None:
         self.fps = fps
         self.resolution = resolution
+        self.dimensions = dimensions
 
         self.images = []
         self.actions = []
