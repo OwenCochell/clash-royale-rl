@@ -64,11 +64,8 @@ class GameEngine():
                  deck1: list[str] = ['knight' * 8], 
                  deck2: list[str] = ['knight' * 8], 
                  fps: int = 30,
-                 seed: int = 0,
                  resolution: npt.ArrayLike = [128, 128],
                  dimensions: npt.ArrayLike = [32, 18]) -> None:
-        
-        np.random.seed(seed)
         self.fps = fps
         self.resolution = resolution
 
