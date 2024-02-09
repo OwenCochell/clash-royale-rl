@@ -74,6 +74,9 @@ class Building(Card):
     def render(self, canvas) -> None:
         pass
 
+class Spell(Card):
+    pass
+
 class PrincessTower(Building):
     pass
 

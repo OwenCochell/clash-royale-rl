@@ -45,7 +45,7 @@ class Player():
 
     def get_pseudo_legal_cards(self) -> list[int]:
         hand = self.hand.hand()
-        return [card_idx for card_idx in range(len(hand)) if hand[card_idx] <= self.elixir]
+        return [(card_idx, isinstance(hand[card_idx], cr.Spell)) for card_idx in range(len(hand)) if hand[card_idx] <= self.elixir]
     
     def play_card(self, index: int) -> None:
         elixir = self.hand.query(index).elixir
@@ -75,7 +75,7 @@ class GameEngine():
         self.current_frame = 0
 
         self.state = 0
-        self.placement_mask = np.ones(shape=(32,18,), dtype=bool)
+        self.placement_masks = np.ones(shape=(2, 18, 32, ), dtype=bool)
         self.elixir_rate = (1/2.8)
 
         self.player_1 = Player(deck1)
@@ -90,17 +90,7 @@ class GameEngine():
     def apply(self, action: tuple[int, int, int]) -> None:
         pass
 
-    def step(self, frames:int = 1) -> None:
-        if self.game_over:
-            return
-        
-        self.player_1.step(self.elixir_rate, self.fps, frames)
-        self.player_2.step(self.elixir_rate, self.fps, frames)
-
-        # update troop health, placement, etc
-
-        self.current_frame += frames
-
+    def update_frames(self, frames:int) -> None:
         if self.state == 0 and self.current_frame >= self.fps * 120:
             self.state = 1
             self.elixir_rate = (2/2.8)
@@ -127,6 +117,24 @@ class GameEngine():
                 #check draw overtime tower health condition for all towers
                 self.victor = 0.5
 
+    def update_placement_masks(self) -> None:
+        pass
+
+
+    def step(self, frames:int = 1) -> None:
+        if self.game_over:
+            return
+        
+        # update elixir
+        self.player_1.step(self.elixir_rate, self.fps, frames)
+        self.player_2.step(self.elixir_rate, self.fps, frames)
+
+        # update troop health, placement, etc
+        self.current_frame += frames
+        self.update_troops(frames)
+
+        self.update_placement_masks()
+       
 
     def is_terminal(self) -> bool:
         return self.game_over
@@ -135,15 +143,18 @@ class GameEngine():
         return self.victor
 
     def legal_actions(self, to_play: int) -> np.ndarray:
-        actions = np.zeros(shape=(32, 18, 5), dtype=np.float64)
+        actions = np.zeros(shape=(18, 32, 5), dtype=np.float64)
         actions[:,:,4] = 1 # no card is always legal
         if to_play == 0:
             hand = self.player_1.get_pseudo_legal_cards()
         else:
             hand = self.player_2.get_pseudo_legal_cards()
 
-        for card_index in hand:
-            actions[self.placement_mask, card_index] = 1
+        for (card_index, is_spell) in hand:
+            if is_spell:
+                actions[:, :, card_index] = 1
+            else:
+                actions[self.placement_masks[to_play], card_index] = 1
 
         return actions
 
