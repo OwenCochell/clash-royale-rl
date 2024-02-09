@@ -12,7 +12,7 @@ class Card():
 class Troop(Card):
     def __init__(self,
                  elixir:int,
-                 pixel_size:npt.ArrayLike,
+                 pixel_size: npt.ArrayLike,
 
                  location: npt.ArrayLike,
                  health:int,
@@ -34,6 +34,8 @@ class Troop(Card):
         self.troop_targeting = troop_targeting
         self.is_air = is_air,
         self.air_targeting = air_targeting
+        
+        self.current_target = None
 
     def render(self, canvas) -> None:
         pygame.draw.circle(
@@ -48,6 +50,11 @@ class Troop(Card):
             self.location * self.pixel_size,
             0.3 * self.pixel_size[0]*0.95,#  0.3 temp set size, using height as sizes
         )
+
+    def move_to(self, location: npt.ArrayLike):
+        self.location = location
+        # reset target acquisition
+        self.current_target = None
 
 class Building(Card):
     def __init__(self,
