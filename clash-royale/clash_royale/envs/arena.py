@@ -13,8 +13,8 @@ class ArenaEnv(gym.Env):
     def __init__(self, fps: int=30, render_mode: str=None):
         self.width = 18
         self.height = 32
-        self.window_size_width = 128
-        self.window_size_height = 128
+        self.screen_width = 128
+        self.screen_height = 128
 
         self.fps = fps
 
@@ -22,8 +22,8 @@ class ArenaEnv(gym.Env):
         # Each location is encoded as an element of {0, ..., `size`}^2, i.e. MultiDiscrete([size, size]).
         self.observation_space = spaces.Dict(
             {
-                "p1-view": spaces.Box(0, 255, shape=(self.window_size_width, self.window_size_height, 3), dtype=np.uint8),
-                "p2-view": spaces.Box(0, 255, shape=(self.window_size_width, self.window_size_height, 3), dtype=np.uint8),
+                "p1-view": spaces.Box(0, 255, shape=(self.screen_width, self.screen_height, 3), dtype=np.uint8),
+                "p2-view": spaces.Box(0, 255, shape=(self.screen_width, self.screen_height, 3), dtype=np.uint8),
             }
         )
 
@@ -41,8 +41,8 @@ class ArenaEnv(gym.Env):
         }
     
     def reset(self, 
-              deck1: list[str] = ['knight' * 8], 
-              deck2: list[str] = ['knight' * 8], 
+              deck1: list[str] = ['knight'] * 8, 
+              deck2: list[str] = ['knight'] * 8, 
               seed=None, options=None):
         # We need the following line to seed self.np_random
         super().reset(seed=seed)
@@ -52,8 +52,8 @@ class ArenaEnv(gym.Env):
                                      resolution=[self.screen_width, self.screen_height],
                                      dimensions=[self.width, self.height])
 
-        self._p1_view = np.zeros(shape=(self.window_size_width, self.window_size_height, 3), dtype=np.uint8)
-        self._p2_view = np.zeros(shape=(self.window_size_width, self.window_size_height, 3), dtype=np.uint8)
+        self._p1_view = np.zeros(shape=(self.screen_width, self.screen_height, 3), dtype=np.uint8)
+        self._p2_view = np.zeros(shape=(self.screen_width, self.screen_height, 3), dtype=np.uint8)
 
         observation = self._get_obs()
         info = self._get_info()
@@ -84,7 +84,7 @@ class ArenaEnv(gym.Env):
             #pygame.init()
             #pygame.display.init()
             #self.window = pygame.display.set_mode(
-            #    (self.window_size_width, self.window_size_height)
+            #    (self.screen_width, self.screen_height)
             #)
         #if self.clock is None and self.render_mode == "human":
             #self.clock = pygame.time.Clock()
@@ -100,7 +100,7 @@ class ArenaEnv(gym.Env):
             # The following line will automatically add a delay to keep the framerate stable.
             #self.clock.tick(self.metadata["render_fps"])
         else:  # rgb_array
-            return np.zeros(shape=(self.window_size_width, self.window_size_height, 3), dtype=np.uint8)
+            return np.zeros(shape=(self.screen_width, self.screen_height, 3), dtype=np.uint8)
             #return np.transpose(
             #    np.array(pygame.surfarray.pixels3d(canvas)), axes=(1, 0, 2)
             #)
