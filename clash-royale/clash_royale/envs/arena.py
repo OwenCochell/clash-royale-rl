@@ -100,10 +100,7 @@ class ArenaEnv(gym.Env):
             # The following line will automatically add a delay to keep the framerate stable.
             #self.clock.tick(self.metadata["render_fps"])
         else:  # rgb_array
-            return np.zeros(shape=(self.screen_width, self.screen_height, 3), dtype=np.uint8)
-            #return np.transpose(
-            #    np.array(pygame.surfarray.pixels3d(canvas)), axes=(1, 0, 2)
-            #)
+            return self.env.image()
         
     def close(self):
         pass

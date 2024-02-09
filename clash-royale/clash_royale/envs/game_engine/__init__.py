@@ -2,6 +2,8 @@ import numpy as np
 import numpy.typing as npt
 from queue import Queue
 
+import pygame
+
 import clash_royale.envs.game_engine.cards as cr
 
 
@@ -84,13 +86,27 @@ class GameEngine():
         self.game_over = False
         self.victor = None
 
-    def image(self):
-        pass
+        self.entity_list = []
+
+    def image(self) -> np.ndarray:
+        # display entities layered
+        canvas = pygame.Surface(self.resolution)
+        canvas.fill((255, 255, 255))
+
+        # render entities
+        self.entity_list.sort(key=lambda entity: entity.location[1])
+
+        for entity in self.entity_list:
+            entity.render(canvas)
+
+        # render info
+
+        return np.array(pygame.surfarray.pixels3d(canvas))
 
     def apply(self, action: tuple[int, int, int]) -> None:
         pass
 
-    def update_frames(self, frames:int) -> None:
+    def update_state(self, frames:int) -> None:
         if self.state == 0 and self.current_frame >= self.fps * 120:
             self.state = 1
             self.elixir_rate = (2/2.8)
@@ -117,6 +133,9 @@ class GameEngine():
                 #check draw overtime tower health condition for all towers
                 self.victor = 0.5
 
+    def update_troops(self, frames:int) -> None:
+        pass
+
     def update_placement_masks(self) -> None:
         pass
 
@@ -131,6 +150,7 @@ class GameEngine():
 
         # update troop health, placement, etc
         self.current_frame += frames
+        self.update_state(frames)
         self.update_troops(frames)
 
         self.update_placement_masks()
